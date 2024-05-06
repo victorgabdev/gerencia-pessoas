@@ -3,6 +3,8 @@ package com.victorgabdev.gerenciapessoas.modules.person.service;
 import com.victorgabdev.gerenciapessoas.core.person.Person;
 import com.victorgabdev.gerenciapessoas.core.person.PersonRepository;
 import com.victorgabdev.gerenciapessoas.core.person.PersonService;
+import com.victorgabdev.gerenciapessoas.shared.exceptions.CustomException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -27,8 +29,8 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person getPersonById(Long id) {
         Optional<Person> personOpt = personRepository.findById(id);
-        // tratamento de excessão
-        return personOpt.orElse(null);
+        if(!personOpt.isPresent()) throw new CustomException("Usuário não existe", HttpStatus.NOT_FOUND);
+        return personOpt.get();
 
     }
 
