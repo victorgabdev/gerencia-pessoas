@@ -1,4 +1,5 @@
 package com.victorgabdev.gerenciapessoas.core.address;
+import com.victorgabdev.gerenciapessoas.core.person.Person;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -23,6 +24,10 @@ public class Address {
 
     @Column(name = "primary_address")
     private boolean primary;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "person_id")
+    private Person person;
 
     public Address() {
     }
@@ -87,6 +92,14 @@ public class Address {
 
     public void setPrimary(boolean primary) {
         this.primary = primary;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     @Override
