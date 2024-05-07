@@ -2,6 +2,7 @@ package com.victorgabdev.gerenciapessoas.modules.address.controller;
 
 import com.victorgabdev.gerenciapessoas.core.address.Address;
 import com.victorgabdev.gerenciapessoas.core.address.AddressService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,12 @@ public class AddressController {
         return ResponseEntity.ok(address);
     }
 
-    // @PostMapping
+    @PostMapping("person/{personId}/create")
+    public ResponseEntity<Address> createAddress(@PathVariable Long personId, @RequestBody Address address) {
+        Address createdAddress  = addressService.createAddressToPerson(personId, address);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAddress);
+    }
+
 
     // @PutMapping
 
