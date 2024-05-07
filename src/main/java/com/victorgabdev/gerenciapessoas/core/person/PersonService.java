@@ -1,13 +1,14 @@
 package com.victorgabdev.gerenciapessoas.core.person;
 
+import com.victorgabdev.gerenciapessoas.modules.person.model.PersonDTO;
+
 import java.util.List;
-import java.util.Optional;
+
 
 public interface PersonService {
-    List<Person> getAllPersons();
-    Person getPersonById(Long id);
-    Person createPerson(Person person);
+    List<PersonDTO> getAllPersons();
+    PersonDTO getPersonById(Long id);
+    PersonDTO createPerson(Person person);
     Person updatePerson(Long id, Person updatedPerson);
     void deletePerson(Long id);
-    void setPrimaryAddress(Long personId, Long addressId);
 }
