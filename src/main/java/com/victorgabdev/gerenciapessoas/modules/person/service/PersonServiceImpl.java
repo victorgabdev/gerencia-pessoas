@@ -49,13 +49,24 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person updatePerson(Long id, Person updatedPerson) {
-        return null;
+    public PersonDTO updatePerson(Person updatedPerson) {
+        Person person = getPersonByIdOrThrow(updatedPerson.getId());
+
+        // Verifica se já existe uma pessoa com o mesmo nome (exceto a pessoa atual)
+        Optional<Person> personWithSameName = personRepository.findByFullNameAndIdNot(updatedPerson.getFullName(), updatedPerson.getId());
+        if(personWithSameName.isPresent()) throw new CustomException("Já existe uma Pessoa com o mesmo nome", HttpStatus.BAD_REQUEST);
+
+        person.setFullName(updatedPerson.getFullName());
+        person.setBirthDate(updatedPerson.getBirthDate());
+
+        Person updatedPersonEntity = personRepository.save(person);
+        return PersonDTO.fromPerson(updatedPersonEntity);
     }
 
     @Override
     public void deletePerson(Long id) {
-
+        Person person = getPersonByIdOrThrow(id);
+        personRepository.delete(person);
     }
 
     private Person getPersonByIdOrThrow(Long personId) {
