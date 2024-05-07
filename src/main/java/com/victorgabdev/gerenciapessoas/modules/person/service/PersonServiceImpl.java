@@ -1,15 +1,17 @@
 package com.victorgabdev.gerenciapessoas.modules.person.service;
 
 import com.victorgabdev.gerenciapessoas.core.person.Person;
-import com.victorgabdev.gerenciapessoas.core.person.PersonRepository;
+import com.victorgabdev.gerenciapessoas.modules.person.model.PersonDTO;
+import com.victorgabdev.gerenciapessoas.modules.person.repository.PersonRepository;
 import com.victorgabdev.gerenciapessoas.core.person.PersonService;
 import com.victorgabdev.gerenciapessoas.shared.exceptions.CustomException;
+import com.victorgabdev.gerenciapessoas.util.ServiceUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -22,21 +24,28 @@ public class PersonServiceImpl implements PersonService {
 
 
     @Override
-    public List<Person> getAllPersons() {
-        return Collections.emptyList();
+    public List<PersonDTO> getAllPersons() {
+        List<Person> persons = personRepository.findAll();
+
+        return persons
+                .stream()
+                .map(person -> PersonDTO.fromPerson(person))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Person getPersonById(Long id) {
-        Optional<Person> personOpt = personRepository.findById(id);
-        if(!personOpt.isPresent()) throw new CustomException("Usuário não existe", HttpStatus.NOT_FOUND);
-        return personOpt.get();
-
+    public PersonDTO getPersonById(Long id) {
+        Person person = getPersonByIdOrThrow(id);
+        return PersonDTO.fromPerson(person);
     }
 
     @Override
-    public Person createPerson(Person person) {
-        return null;
+    public PersonDTO createPerson(Person person) {
+        Optional<Person> personOpt = personRepository.findByFullName(person.getFullName());
+        if (personOpt.isPresent()) throw new CustomException("Uma pessoa com o mesmo nome já existe", HttpStatus.BAD_REQUEST);
+
+        Person createdPerson = personRepository.save(person);
+        return PersonDTO.fromPerson(createdPerson);
     }
 
     @Override
@@ -49,8 +58,8 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
-    @Override
-    public void setPrimaryAddress(Long personId, Long addressId) {
-
+    private Person getPersonByIdOrThrow(Long personId) {
+        Optional<Person> personOpt = personRepository.findById(personId);
+        return ServiceUtils.checkEntityExists(personOpt, "Pessoa não encontrada");
     }
 }
