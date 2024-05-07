@@ -38,5 +38,16 @@ public class PersonController {
     }
 
     // update pessoa
+    @PutMapping("/update")
+    public ResponseEntity<PersonDTO> updatePerson(@RequestBody Person person) {
+        PersonDTO personDTO = personService.updatePerson(person);
+        return ResponseEntity.ok(personDTO);
+    }
+
     // deleta pessoa
+    @DeleteMapping("delete/{personId}")
+    public ResponseEntity<PersonDTO> deletePerson(@PathVariable Long personId) {
+        personService.deletePerson(personId);
+        return ResponseEntity.noContent().build();
+    }
 }

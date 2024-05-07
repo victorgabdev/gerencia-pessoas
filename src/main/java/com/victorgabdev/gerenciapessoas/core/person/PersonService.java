@@ -9,6 +9,6 @@ public interface PersonService {
     List<PersonDTO> getAllPersons();
     PersonDTO getPersonById(Long id);
     PersonDTO createPerson(Person person);
-    Person updatePerson(Long id, Person updatedPerson);
+    PersonDTO updatePerson(Person updatedPerson);
     void deletePerson(Long id);
 }
