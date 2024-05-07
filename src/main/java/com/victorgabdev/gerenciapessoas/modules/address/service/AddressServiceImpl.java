@@ -18,13 +18,10 @@ import java.util.Optional;
 public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
-
-    private final PersonService personService;
     private final PersonRepository personRepository;
 
     public AddressServiceImpl(AddressRepository addressRepository, PersonService personService, PersonRepository personRepository) {
         this.addressRepository = addressRepository;
-        this.personService = personService;
         this.personRepository = personRepository;
     }
 
