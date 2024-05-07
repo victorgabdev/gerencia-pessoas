@@ -58,16 +58,37 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address updateAddressToPerson(Long personId, Long addressId, Address updatedAddress) {
-        return null;
+        Person person = getPersonByIdOrThrow(personId);
+        Address addressToUpdate = getAddressByIdOrThrow(person, addressId);
+
+        addressToUpdate.setStreet(updatedAddress.getStreet());
+        addressToUpdate.setZipCode(updatedAddress.getZipCode());
+        addressToUpdate.setNumber(updatedAddress.getNumber());
+        addressToUpdate.setCity(updatedAddress.getCity());
+        addressToUpdate.setState(updatedAddress.getState());
+        addressToUpdate.setPrimary(updatedAddress.isPrimary());
+
+        return addressRepository.save(addressToUpdate);
     }
 
     @Override
     public void deleteAddressToPerson(Long personId, Long addressId) {
+        Person person = getPersonByIdOrThrow(personId);
+        Address addressToDelete = getAddressByIdOrThrow(person, addressId);
 
+        person.getAddresses().remove(addressToDelete);
+        addressRepository.delete(addressToDelete);
     }
 
     private Person getPersonByIdOrThrow(Long personId) {
         Optional<Person> personOpt = personRepository.findById(personId);
         return ServiceUtils.checkEntityExists(personOpt, "Pessoa não encontrada");
+    }
+
+    private Address getAddressByIdOrThrow(Person person, Long addressId) {
+        return person.getAddresses().stream()
+                .filter(address -> address.getId().equals(addressId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException("Endereço não encontrado para a pessoa especificada", HttpStatus.NOT_FOUND));
     }
 }

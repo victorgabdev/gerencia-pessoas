@@ -37,8 +37,16 @@ public class AddressController {
     }
 
 
-    // @PutMapping
+    @PutMapping("person/{personId}/{addressId}/update")
+    public ResponseEntity<Address> updateAddress(@PathVariable Long personId, @PathVariable Long addressId, @RequestBody Address address) {
+        Address updatedAddress = addressService.updateAddressToPerson(personId, addressId, address);
+        return ResponseEntity.ok(updatedAddress);
+    }
 
-    // @DeleteMapping
+    @DeleteMapping("person/{personId}/{addressId}/delete")
+    public ResponseEntity<Address> deleteAddress(@PathVariable Long personId, @PathVariable Long addressId) {
+        addressService.deleteAddressToPerson(personId, addressId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
