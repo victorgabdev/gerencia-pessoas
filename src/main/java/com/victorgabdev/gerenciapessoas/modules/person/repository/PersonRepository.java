@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface PersonRepository extends JpaRepository<Person, Long> {
     Optional<Person> findByFullName(String fullName);
+    Optional<Person> findByFullNameAndIdNot(String fullName, Long id);
 }
