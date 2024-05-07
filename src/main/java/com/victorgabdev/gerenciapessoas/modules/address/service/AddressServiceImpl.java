@@ -7,6 +7,7 @@ import com.victorgabdev.gerenciapessoas.core.person.Person;
 import com.victorgabdev.gerenciapessoas.core.person.PersonRepository;
 import com.victorgabdev.gerenciapessoas.core.person.PersonService;
 import com.victorgabdev.gerenciapessoas.shared.exceptions.CustomException;
+import com.victorgabdev.gerenciapessoas.util.ServiceUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,40 +20,40 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
 
     private final PersonService personService;
+    private final PersonRepository personRepository;
 
-    public AddressServiceImpl(AddressRepository addressRepository, PersonRepository personRepository, PersonService personService) {
+    public AddressServiceImpl(AddressRepository addressRepository, PersonService personService, PersonRepository personRepository) {
         this.addressRepository = addressRepository;
         this.personService = personService;
+        this.personRepository = personRepository;
     }
 
 
     @Override
     public Address getAddressToPerson(Long personId, Long addressId) {
-        Person person = personService.getPersonById(personId);
-        Optional<Address> addressOpt = addressRepository.findById(addressId);
-        if (!addressOpt.isPresent()) throw new CustomException("Endereço não existe", HttpStatus.NOT_FOUND);
-
-        Address addressToFind = addressOpt.get();
-        return person.getAddresses()
-                .stream()
-                .filter(address -> address.getId().equals(addressToFind.getId()))
-                .findFirst()
+        Person person =  getPersonByIdOrThrow(personId);
+        Address address = addressRepository.findByIdAndPersonId(addressId, personId)
                 .orElseThrow(() -> new CustomException("Endereço não encontrado para a pessoa especificada", HttpStatus.NOT_FOUND));
+        return address;
     }
 
 
     @Override
     public List<Address> getAllAddressToPerson(Long personId) {
-        Person person = personService.getPersonById(personId);
-        List<Address> addressesToPerson = person.getAddresses();
-        if(addressesToPerson.isEmpty()) throw new CustomException("A Pessoa não possui endereço cadastrado", HttpStatus.NOT_FOUND);
-
-        return addressesToPerson;
+        Person person = getPersonByIdOrThrow(personId);
+        return person.getAddresses();
     }
 
     @Override
     public Address createAddressToPerson(Long personId, Address address) {
-        return null;
+        Person person = getPersonByIdOrThrow(personId);
+        if (address.isPrimary()) person.getAddresses().forEach(ad -> ad.setPrimary(false));
+        person.getAddresses().add(address);
+
+        personRepository.save(person);
+        addressRepository.save(address);
+
+        return address;
     }
 
     @Override
@@ -63,5 +64,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void deleteAddressToPerson(Long personId, Long addressId) {
 
+    }
+
+    private Person getPersonByIdOrThrow(Long personId) {
+        Optional<Person> personOpt = personRepository.findById(personId);
+        return ServiceUtils.checkEntityExists(personOpt, "Pessoa não encontrada");
     }
 }
