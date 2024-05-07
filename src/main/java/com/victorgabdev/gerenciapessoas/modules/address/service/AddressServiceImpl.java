@@ -1,10 +1,10 @@
 package com.victorgabdev.gerenciapessoas.modules.address.service;
 
 import com.victorgabdev.gerenciapessoas.core.address.Address;
-import com.victorgabdev.gerenciapessoas.core.address.AddressRepository;
+import com.victorgabdev.gerenciapessoas.modules.address.repository.AddressRepository;
 import com.victorgabdev.gerenciapessoas.core.address.AddressService;
 import com.victorgabdev.gerenciapessoas.core.person.Person;
-import com.victorgabdev.gerenciapessoas.core.person.PersonRepository;
+import com.victorgabdev.gerenciapessoas.modules.person.repository.PersonRepository;
 import com.victorgabdev.gerenciapessoas.core.person.PersonService;
 import com.victorgabdev.gerenciapessoas.shared.exceptions.CustomException;
 import com.victorgabdev.gerenciapessoas.util.ServiceUtils;
